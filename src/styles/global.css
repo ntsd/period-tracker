@@ -1,0 +1,146 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   Period Tracker Custom Styles
+======================================== */
+
+/* Calendar Base Styles */
+.period-tracker-calendar {
+  font-family: inherit;
+}
+
+.period-tracker-calendar .fc-toolbar-title {
+  @apply text-xl font-semibold text-white;
+}
+
+/* Calendar Button Styles */
+.period-tracker-calendar .fc-button {
+  @apply bg-gray-700 border-gray-600 text-gray-200;
+}
+
+.period-tracker-calendar .fc-button:hover {
+  @apply bg-gray-600;
+}
+
+.period-tracker-calendar .fc-button-primary:disabled {
+  @apply opacity-50;
+}
+
+.period-tracker-calendar .fc-button-active {
+  @apply bg-primary-600 border-primary-600 text-white;
+}
+
+/* Calendar Day Styles */
+.period-tracker-calendar .fc-col-header-cell {
+  @apply bg-gray-800 text-gray-300;
+}
+
+.period-tracker-calendar .fc-daygrid-day-number {
+  @apply text-gray-100;
+}
+
+.period-tracker-calendar .fc-daygrid-day.fc-day-today {
+  @apply bg-primary-900/20;
+}
+
+.period-tracker-calendar .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+  @apply text-primary-300 font-semibold;
+}
+
+.period-tracker-calendar .fc-daygrid-day.period-day {
+  background-color: rgba(236, 72, 153, 0.1);
+}
+
+.period-tracker-calendar .fc-daygrid-day.fertile-window {
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+/* ========================================
+   Event Styles
+======================================== */
+
+/* Period Event Styles */
+.period-tracker-calendar .fc-event-period {
+  background-color: #ec4899 !important;
+  border-color: #db2777 !important;
+  color: white !important;
+}
+
+.period-tracker-calendar .fc-event-period-clickable {
+  background-color: #ec4899 !important;
+  border-color: #db2777 !important;
+  color: white !important;
+  cursor: pointer !important;
+  font-weight: 600;
+}
+
+.period-tracker-calendar .fc-event-period-clickable:hover {
+  background-color: #db2777 !important;
+  border-color: #be185d !important;
+}
+
+/* Current Period Event Styles */
+.fc-event-current-period-clickable,
+.period-tracker-calendar .fc-event-current-period-clickable {
+  background-color: #dc2626 !important;
+  border-color: #b91c1c !important;
+  color: white !important;
+  cursor: pointer !important;
+  font-weight: bold !important;
+}
+
+.fc-event-current-period-clickable:hover,
+.period-tracker-calendar .fc-event-current-period-clickable:hover {
+  background-color: #b91c1c !important;
+  border-color: #991b1b !important;
+}
+
+/* Note Event Styles */
+.fc-event-note,
+.period-tracker-calendar .fc-event-note {
+  background-color: #10b981 !important;
+  border-color: #059669 !important;
+  color: white !important;
+  cursor: pointer !important;
+  border-radius: 6px !important;
+  font-size: 0.875rem !important;
+  font-style: italic !important;
+  white-space: pre-line !important;
+  line-height: 1.3 !important;
+  padding: 4px 8px !important;
+  min-height: auto !important;
+  overflow: visible !important;
+}
+
+.fc-event-note .fc-event-title {
+  white-space: pre-line !important;
+  word-wrap: break-word !important;
+  overflow: visible !important;
+}
+
+.fc-event-note:hover {
+  background-color: #059669 !important;
+  border-color: #047857 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Ovulation Event Styles */
+.fc-event-ovulation,
+.period-tracker-calendar .fc-event-ovulation {
+  background-color: #8b5cf6 !important;
+  border-color: #7c3aed !important;
+  color: white !important;
+}
+
+/* ========================================
+   UI Component Styles
+======================================== */
+
+/* Symptom Tag Styles */
+.symptom-tag.selected {
+  background-color: rgb(220 38 38) !important;
+  color: white !important;
+}

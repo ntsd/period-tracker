@@ -1,0 +1,38 @@
+{
+  "name": "period-tracker",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "A PWA for menstrual cycle tracking, designed with simplicity and privacy in mind. Built with Astro v5 in static mode.",
+  "keywords": [
+    "period-tracker",
+    "pwa",
+    "astro",
+    "menstrual-cycle",
+    "privacy",
+    "health"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ntsd/period-tracker.git"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/partytown": "^2.1.4",
+    "@astrojs/tailwind": "^5.1.5",
+    "@fullcalendar/core": "^6.1.19",
+    "@fullcalendar/daygrid": "^6.1.19",
+    "@fullcalendar/interaction": "^6.1.19",
+    "@fullcalendar/list": "^6.1.19",
+    "@fullcalendar/timegrid": "^6.1.19",
+    "astro": "^5.13.2",
+    "autoprefixer": "^10.4.21",
+    "flowbite": "^3.1.2",
+    "tailwindcss": "^3.4.17",
+    "workbox-window": "^7.3.0"
+  }
+}
