@@ -23,6 +23,9 @@ interface PeriodData {
   settings: {
     cycleLength: number;
     periodLength: number;
+    showNextPeriodPrediction: boolean;
+    showOvulation: boolean;
+    showSafeDays: boolean;
   };
 }
 
@@ -33,6 +36,7 @@ class PeriodTrackerFlowbite {
   private resizeTimeout: any = null;
   private isMobile: boolean = false;
   private isEditMode: boolean = false;
+  private modals: { [key: string]: Modal } = {};
 
   constructor() {
     this.data = this.loadData();
@@ -49,9 +53,13 @@ class PeriodTrackerFlowbite {
         periods: parsedData.periods || [],
         currentPeriod: parsedData.currentPeriod || null,
         notes: parsedData.notes || [],
-        settings: parsedData.settings || {
-          cycleLength: 28,
-          periodLength: 5,
+        settings: {
+          cycleLength: parsedData.settings?.cycleLength || 28,
+          periodLength: parsedData.settings?.periodLength || 5,
+          showNextPeriodPrediction:
+            parsedData.settings?.showNextPeriodPrediction ?? true,
+          showOvulation: parsedData.settings?.showOvulation ?? true,
+          showSafeDays: parsedData.settings?.showSafeDays ?? false,
         },
       };
     }
@@ -63,6 +71,9 @@ class PeriodTrackerFlowbite {
       settings: {
         cycleLength: 28,
         periodLength: 5,
+        showNextPeriodPrediction: true,
+        showOvulation: true,
+        showSafeDays: false,
       },
     };
   }
@@ -73,6 +84,23 @@ class PeriodTrackerFlowbite {
 
   private updateMobileState(): void {
     this.isMobile = window.innerWidth < 768;
+  }
+
+  private getOrCreateModal(modalId: string): Modal | null {
+    // Return existing modal if it exists
+    if (this.modals[modalId]) {
+      return this.modals[modalId];
+    }
+
+    // Create new modal instance
+    const modalElement = document.getElementById(modalId);
+    if (modalElement) {
+      const modal = new Modal(modalElement);
+      this.modals[modalId] = modal;
+      return modal;
+    }
+
+    return null;
   }
 
   private init(): void {
@@ -158,17 +186,19 @@ class PeriodTrackerFlowbite {
         });
 
         // Add ovulation prediction (typically 14 days before next period)
-        const ovulationDate = this.calculateOvulationDate(period.startDate);
-        if (ovulationDate) {
-          events.push({
-            id: `ovulation-${index}`,
-            title: "🥚 Ovulation",
-            start: ovulationDate,
-            className: "fc-event-ovulation",
-            extendedProps: {
-              type: "ovulation",
-            },
-          });
+        if (this.data.settings.showOvulation) {
+          const ovulationDate = this.calculateOvulationDate(period.startDate);
+          if (ovulationDate) {
+            events.push({
+              id: `ovulation-${index}`,
+              title: this.isMobile ? "Ovulation" : "🥚 Ovulation",
+              start: ovulationDate,
+              className: "fc-event-ovulation",
+              extendedProps: {
+                type: "ovulation",
+              },
+            });
+          }
         }
       }
     });
@@ -266,6 +296,65 @@ class PeriodTrackerFlowbite {
       }
     });
 
+    // Add next 3 period predictions
+    if (
+      this.data.settings.showNextPeriodPrediction &&
+      this.data.periods.length >= 2
+    ) {
+      const futurePeriods = this.calculateFuturePeriods(10);
+      futurePeriods.forEach((periodDate, index) => {
+        const periodEnd = this.addDaysToDate(
+          periodDate,
+          this.data.settings.periodLength - 1
+        );
+
+        const periodNumber = index + 1;
+
+        events.push({
+          id: `period-prediction-${index}`,
+          title: `🔮 Expected Period`,
+          start: periodDate,
+          end: this.addDaysToDate(periodEnd, 1), // FullCalendar end is exclusive
+          className: "fc-event-period-prediction",
+          display: "background",
+          extendedProps: {
+            type: "period-prediction",
+            periodNumber: periodNumber,
+          },
+        });
+
+        events.push({
+          id: `period-prediction-clickable-${index}`,
+          title: `🔮 Expected Period (${this.data.settings.periodLength} days)`,
+          start: periodDate,
+          end: this.addDaysToDate(periodEnd, 1),
+          className: "fc-event-period-prediction-clickable",
+          extendedProps: {
+            type: "period-prediction",
+            periodNumber: periodNumber,
+          },
+        });
+      });
+    }
+
+    // Add safe days background
+    if (this.data.settings.showSafeDays && this.data.periods.length >= 2) {
+      const safeDayRanges = this.calculateSafeDays();
+      safeDayRanges.forEach((range, index) => {
+        events.push({
+          id: `safe-days-${index}`,
+          title: "Safe Days",
+          start: range.start,
+          end: this.addDaysToDate(range.end, 1), // FullCalendar end is exclusive
+          className: "fc-event-safe-days",
+          display: "background",
+          extendedProps: {
+            type: "safe-days",
+          },
+        });
+      });
+    }
+
     return events;
   }
 
@@ -278,6 +367,103 @@ class PeriodTrackerFlowbite {
       return this.addDaysToDate(periodStart, ovulationDay);
     }
     return null;
+  }
+
+  private calculateNextPeriodDate(): string | null {
+    if (this.data.periods.length < 2) return null;
+
+    // Use the last period as reference
+    const lastPeriod = this.data.periods[this.data.periods.length - 1];
+    if (!lastPeriod.endDate) return null;
+
+    const avgCycleLength = this.getAverageCycleLength() || 28;
+    return this.addDaysToDate(lastPeriod.startDate, avgCycleLength);
+  }
+
+  private calculateFuturePeriods(count: number): string[] {
+    if (this.data.periods.length < 2) return [];
+
+    const futurePeriods: string[] = [];
+    const lastPeriod = this.data.periods[this.data.periods.length - 1];
+    if (!lastPeriod.endDate) return [];
+
+    const avgCycleLength = this.getAverageCycleLength() || 28;
+    let currentPredictionDate = lastPeriod.startDate;
+
+    for (let i = 0; i < count; i++) {
+      currentPredictionDate = this.addDaysToDate(
+        currentPredictionDate,
+        avgCycleLength
+      );
+      futurePeriods.push(currentPredictionDate);
+    }
+
+    return futurePeriods;
+  }
+
+  private calculateSafeDays(): { start: string; end: string }[] {
+    if (this.data.periods.length < 2) return [];
+
+    const safeDayRanges: { start: string; end: string }[] = [];
+    const avgCycleLength = this.getAverageCycleLength() || 28;
+    const today = new Date();
+    const oneMonthFromNow = new Date(today);
+    oneMonthFromNow.setMonth(today.getMonth() + 1);
+
+    // Calculate safe days for the next month
+    const nextPeriodDate = this.calculateNextPeriodDate();
+    if (!nextPeriodDate) return [];
+
+    const nextPeriodStart = new Date(nextPeriodDate);
+    const currentDate = new Date();
+
+    // Fertile window: 5 days before ovulation + ovulation day + 1 day after
+    const ovulationDate = new Date(nextPeriodStart);
+    ovulationDate.setDate(nextPeriodStart.getDate() - 14);
+
+    const fertileWindowStart = new Date(ovulationDate);
+    fertileWindowStart.setDate(ovulationDate.getDate() - 5);
+
+    const fertileWindowEnd = new Date(ovulationDate);
+    fertileWindowEnd.setDate(ovulationDate.getDate() + 1);
+
+    const expectedPeriodEnd = new Date(nextPeriodStart);
+    expectedPeriodEnd.setDate(
+      nextPeriodStart.getDate() + this.data.settings.periodLength - 1
+    );
+
+    // Safe days before fertile window (after period ends until fertile window starts)
+    const lastPeriod = this.data.periods[this.data.periods.length - 1];
+    if (lastPeriod.endDate) {
+      const lastPeriodEnd = new Date(lastPeriod.endDate);
+      lastPeriodEnd.setDate(lastPeriodEnd.getDate() + 1); // Day after period ends
+
+      if (lastPeriodEnd < fertileWindowStart) {
+        safeDayRanges.push({
+          start: lastPeriodEnd.toISOString().split("T")[0],
+          end: this.addDaysToDate(
+            fertileWindowStart.toISOString().split("T")[0],
+            -1
+          ),
+        });
+      }
+    }
+
+    // Safe days after fertile window (after fertile window until next period)
+    const dayAfterFertileWindow = new Date(fertileWindowEnd);
+    dayAfterFertileWindow.setDate(fertileWindowEnd.getDate() + 1);
+
+    if (dayAfterFertileWindow < nextPeriodStart) {
+      safeDayRanges.push({
+        start: dayAfterFertileWindow.toISOString().split("T")[0],
+        end: this.addDaysToDate(
+          nextPeriodStart.toISOString().split("T")[0],
+          -1
+        ),
+      });
+    }
+
+    return safeDayRanges;
   }
 
   private addDaysToDate(dateString: string, days: number): string {
@@ -295,7 +481,6 @@ class PeriodTrackerFlowbite {
 
   private handleDateClick(info: any): void {
     // Open note modal for the clicked date
-    const noteModal = document.getElementById("note-modal");
     const noteDateInput = document.getElementById(
       "note-date"
     ) as HTMLInputElement;
@@ -315,8 +500,10 @@ class PeriodTrackerFlowbite {
     }
 
     // Show modal using Flowbite
-    const modal = new Modal(noteModal);
-    modal.show();
+    const modal = this.getOrCreateModal("note-modal");
+    if (modal) {
+      modal.show();
+    }
   }
 
   private handleEventClick(info: any): void {
@@ -326,9 +513,10 @@ class PeriodTrackerFlowbite {
       const note = info.event.extendedProps.note;
       this.populateNoteModal(note);
 
-      const noteModal = document.getElementById("note-modal");
-      const modal = new Modal(noteModal);
-      modal.show();
+      const modal = this.getOrCreateModal("note-modal");
+      if (modal) {
+        modal.show();
+      }
     } else if (eventType === "period" || eventType === "current-period") {
       const period = info.event.extendedProps.period;
       const periodIndex = info.event.extendedProps.periodIndex;
@@ -434,9 +622,10 @@ class PeriodTrackerFlowbite {
         this.clearNoteModal();
       }
 
-      const noteModal = document.getElementById("note-modal");
-      const modal = new Modal(noteModal);
-      modal.show();
+      const modal = this.getOrCreateModal("note-modal");
+      if (modal) {
+        modal.show();
+      }
     });
 
     // Symptom tag selection
@@ -509,6 +698,31 @@ class PeriodTrackerFlowbite {
     document.getElementById("clear-data-btn")?.addEventListener("click", () => {
       this.clearAllData();
     });
+
+    // Settings modal handlers
+    document.getElementById("settings-btn")?.addEventListener("click", () => {
+      this.openSettingsModal();
+    });
+
+    document
+      .getElementById("save-settings-btn")
+      ?.addEventListener("click", () => {
+        this.saveSettings();
+      });
+
+    // Cancel settings button and close button
+    document
+      .getElementById("cancel-settings-btn")
+      ?.addEventListener("click", () => {
+        this.closeSettingsModal();
+      });
+
+    // Close button (X) in settings modal header
+    document
+      .querySelector('#settings-modal [data-modal-hide="settings-modal"]')
+      ?.addEventListener("click", () => {
+        this.closeSettingsModal();
+      });
 
     // Handle window resize to update mobile/desktop note display
     window.addEventListener("resize", () => {
@@ -638,9 +852,8 @@ class PeriodTrackerFlowbite {
     }
 
     // Show the modal using Flowbite API
-    const modalElement = document.getElementById("period-modal");
-    if (modalElement) {
-      const modal = new Modal(modalElement);
+    const modal = this.getOrCreateModal("period-modal");
+    if (modal) {
       modal.show();
     }
   }
@@ -854,9 +1067,8 @@ class PeriodTrackerFlowbite {
   }
 
   private closePeriodModal(): void {
-    const modalElement = document.getElementById("period-modal");
-    if (modalElement) {
-      const modal = new Modal(modalElement);
+    const modal = this.getOrCreateModal("period-modal");
+    if (modal) {
       modal.hide();
     }
 
@@ -905,9 +1117,10 @@ class PeriodTrackerFlowbite {
     this.refreshCalendar();
 
     // Hide modal
-    const noteModal = document.getElementById("note-modal");
-    const modal = new Modal(noteModal);
-    modal.hide();
+    const modal = this.getOrCreateModal("note-modal");
+    if (modal) {
+      modal.hide();
+    }
   }
 
   private deleteNote(): void {
@@ -932,9 +1145,8 @@ class PeriodTrackerFlowbite {
   }
 
   private closeNoteModal(): void {
-    const noteModal = document.getElementById("note-modal");
-    if (noteModal) {
-      const modal = new Modal(noteModal);
+    const modal = this.getOrCreateModal("note-modal");
+    if (modal) {
       modal.hide();
     }
 
@@ -1155,11 +1367,122 @@ class PeriodTrackerFlowbite {
         settings: {
           cycleLength: 28,
           periodLength: 5,
+          showNextPeriodPrediction: true,
+          showOvulation: true,
+          showSafeDays: false,
         },
       };
       this.saveData();
       this.updateUI();
       this.refreshCalendar();
+    }
+  }
+
+  private populateSettingsModal(): void {
+    // Populate the settings modal with current values
+    const cycleLengthInput = document.getElementById(
+      "cycle-length-setting"
+    ) as HTMLInputElement;
+    const periodLengthInput = document.getElementById(
+      "period-length-setting"
+    ) as HTMLInputElement;
+    const showNextPeriodCheckbox = document.getElementById(
+      "show-next-period-checkbox"
+    ) as HTMLInputElement;
+    const showOvulationCheckbox = document.getElementById(
+      "show-ovulation-checkbox"
+    ) as HTMLInputElement;
+    const showSafeDaysCheckbox = document.getElementById(
+      "show-safe-days-checkbox"
+    ) as HTMLInputElement;
+
+    if (cycleLengthInput) {
+      cycleLengthInput.value = this.data.settings.cycleLength.toString();
+    }
+    if (periodLengthInput) {
+      periodLengthInput.value = this.data.settings.periodLength.toString();
+    }
+    if (showNextPeriodCheckbox) {
+      showNextPeriodCheckbox.checked =
+        this.data.settings.showNextPeriodPrediction;
+    }
+    if (showOvulationCheckbox) {
+      showOvulationCheckbox.checked = this.data.settings.showOvulation;
+    }
+    if (showSafeDaysCheckbox) {
+      showSafeDaysCheckbox.checked = this.data.settings.showSafeDays;
+    }
+  }
+
+  private openSettingsModal(): void {
+    // Populate the settings modal with current values
+    this.populateSettingsModal();
+
+    // Show the modal
+    const modal = this.getOrCreateModal("settings-modal");
+    if (modal) {
+      modal.show();
+    }
+  }
+
+  private saveSettings(): void {
+    // Get values from the settings modal
+    const cycleLengthInput = document.getElementById(
+      "cycle-length-setting"
+    ) as HTMLInputElement;
+    const periodLengthInput = document.getElementById(
+      "period-length-setting"
+    ) as HTMLInputElement;
+    const showNextPeriodCheckbox = document.getElementById(
+      "show-next-period-checkbox"
+    ) as HTMLInputElement;
+    const showOvulationCheckbox = document.getElementById(
+      "show-ovulation-checkbox"
+    ) as HTMLInputElement;
+    const showSafeDaysCheckbox = document.getElementById(
+      "show-safe-days-checkbox"
+    ) as HTMLInputElement;
+
+    // Validate inputs
+    const cycleLength = parseInt(cycleLengthInput?.value || "28");
+    const periodLength = parseInt(periodLengthInput?.value || "5");
+
+    if (cycleLength < 21 || cycleLength > 40) {
+      alert("Cycle length must be between 21 and 40 days");
+      return;
+    }
+
+    if (periodLength < 1 || periodLength > 10) {
+      alert("Period length must be between 1 and 10 days");
+      return;
+    }
+
+    if (periodLength >= cycleLength) {
+      alert("Period length must be less than cycle length");
+      return;
+    }
+
+    // Update settings
+    this.data.settings.cycleLength = cycleLength;
+    this.data.settings.periodLength = periodLength;
+    this.data.settings.showNextPeriodPrediction =
+      showNextPeriodCheckbox?.checked ?? true;
+    this.data.settings.showOvulation = showOvulationCheckbox?.checked ?? true;
+    this.data.settings.showSafeDays = showSafeDaysCheckbox?.checked ?? false;
+
+    // Save and refresh
+    this.saveData();
+    this.updateUI();
+    this.refreshCalendar();
+
+    // Close the modal
+    this.closeSettingsModal();
+  }
+
+  private closeSettingsModal(): void {
+    const modal = this.getOrCreateModal("settings-modal");
+    if (modal) {
+      modal.hide();
     }
   }
 }

@@ -42,11 +42,11 @@
 }
 
 .period-tracker-calendar .fc-daygrid-day.fc-day-today {
-  @apply bg-primary-900/20;
+  @apply bg-yellow-500/30 border-2 border-yellow-400;
 }
 
 .period-tracker-calendar .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
-  @apply text-primary-300 font-semibold;
+  @apply text-yellow-200 font-bold;
 }
 
 .period-tracker-calendar .fc-daygrid-day.period-day {
@@ -120,6 +120,13 @@
   overflow: visible !important;
 }
 
+/* Responsive Font Size for Event Titles */
+.fc-event .fc-event-title {
+  @media (max-width: 768px) {
+    font-size: 0.8em !important;
+  }
+}
+
 .fc-event-note:hover {
   background-color: #059669 !important;
   border-color: #047857 !important;
@@ -133,6 +140,35 @@
   background-color: #8b5cf6 !important;
   border-color: #7c3aed !important;
   color: white !important;
+}
+
+/* Next Period Prediction Styles */
+.fc-event-period-prediction,
+.period-tracker-calendar .fc-event-period-prediction {
+  background-color: rgba(236, 72, 153, 0.3) !important;
+  border: 2px dashed #ec4899 !important;
+}
+
+.fc-event-period-prediction-clickable,
+.period-tracker-calendar .fc-event-period-prediction-clickable {
+  background-color: rgba(236, 72, 153, 0.6) !important;
+  border-color: #ec4899 !important;
+  color: white !important;
+  cursor: pointer !important;
+  font-style: italic !important;
+  border-style: dashed !important;
+}
+
+.fc-event-period-prediction-clickable:hover,
+.period-tracker-calendar .fc-event-period-prediction-clickable:hover {
+  background-color: rgba(236, 72, 153, 0.8) !important;
+}
+
+/* Safe Days Styles */
+.fc-event-safe-days,
+.period-tracker-calendar .fc-event-safe-days {
+  background-color: rgba(34, 197, 94, 0.2) !important;
+  border: none !important;
 }
 
 /* ========================================

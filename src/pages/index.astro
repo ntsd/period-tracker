@@ -47,6 +47,17 @@ import Layout from "../layouts/Layout.astro";
           >
             <li>
               <button
+                id="settings-btn"
+                type="button"
+                data-modal-target="settings-modal"
+                data-modal-toggle="settings-modal"
+                class="block w-full text-left px-4 py-2 hover:bg-gray-600 hover:text-white"
+              >
+                Settings
+              </button>
+            </li>
+            <li>
+              <button
                 id="export-data-btn"
                 class="block w-full text-left px-4 py-2 hover:bg-gray-600 hover:text-white"
                 >Export Data</button
@@ -59,13 +70,6 @@ import Layout from "../layouts/Layout.astro";
                 >Import Data</button
               >
             </li>
-            <li>
-              <button
-                id="clear-data-btn"
-                class="block w-full text-left px-4 py-2 hover:bg-gray-600 hover:text-white text-red-600"
-                >Clear All Data</button
-              >
-            </li>
           </ul>
         </div>
       </div>
@@ -75,10 +79,10 @@ import Layout from "../layouts/Layout.astro";
   <main class="container mx-auto px-0 md:px-4 py-0 md:py-8 max-w-7xl">
     <!-- Status Cards -->
     <div
-      class="grid grid-cols-1 md:grid-cols-3 md:gap-6 mb-4 md:mb-8 divide-y-2 divide-gray-200 dark:divide-gray-600 md:divide-y-0"
+      class="grid grid-cols-1 md:grid-cols-3 md:gap-6 mb-4 md:mb-8 divide-y-2 divide-gray-600 md:divide-y-0"
     >
       <!-- Current Status Card -->
-      <div class="bg-white dark:bg-gray-800 md:rounded-lg shadow-lg p-4 md:p-6">
+      <div class="bg-gray-800 md:rounded-lg shadow-lg p-4 md:p-6">
         <div class="flex items-center">
           <div
             id="status-indicator"
@@ -87,49 +91,36 @@ import Layout from "../layouts/Layout.astro";
             <span class="text-2xl">🌙</span>
           </div>
           <div>
-            <h3
-              id="cycle-status"
-              class="text-lg font-semibold text-gray-900 dark:text-white"
-            >
+            <h3 id="cycle-status" class="text-lg font-semibold text-white">
               Track your cycle
             </h3>
-            <p id="cycle-info" class="text-sm text-gray-600 dark:text-gray-400">
+            <p id="cycle-info" class="text-sm text-gray-400">
               Start tracking to see your cycle information
             </p>
-            <p
-              id="days-info"
-              class="text-xs text-gray-500 dark:text-gray-500 mt-1"
-            >
-            </p>
+            <p id="days-info" class="text-xs text-gray-500 mt-1"></p>
           </div>
         </div>
       </div>
 
       <!-- Period Days Card -->
-      <div class="bg-white dark:bg-gray-800 md:rounded-lg shadow-lg p-4 md:p-6">
+      <div class="bg-gray-800 md:rounded-lg shadow-lg p-4 md:p-6">
         <div class="flex items-center">
           <div
-            class="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-lg flex items-center justify-center mr-4"
+            class="w-12 h-12 bg-primary-900 rounded-lg flex items-center justify-center mr-4"
           >
             <span class="text-2xl">🔴</span>
           </div>
           <div>
-            <h3
-              class="text-lg font-semibold text-gray-900 dark:text-white"
-              id="period-days-title"
-            >
+            <h3 class="text-lg font-semibold text-white" id="period-days-title">
               Period Days
             </h3>
             <p
-              class="text-2xl font-bold text-primary-600 dark:text-primary-400"
+              class="text-2xl font-bold text-primary-400"
               id="period-days-count"
             >
               -
             </p>
-            <p
-              class="text-sm text-gray-600 dark:text-gray-400"
-              id="period-days-subtitle"
-            >
+            <p class="text-sm text-gray-400" id="period-days-subtitle">
               This month
             </p>
           </div>
@@ -137,24 +128,19 @@ import Layout from "../layouts/Layout.astro";
       </div>
 
       <!-- Cycle Length Card -->
-      <div class="bg-white dark:bg-gray-800 md:rounded-lg shadow-lg p-4 md:p-6">
+      <div class="bg-gray-800 md:rounded-lg shadow-lg p-4 md:p-6">
         <div class="flex items-center">
           <div
-            class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mr-4"
+            class="w-12 h-12 bg-purple-900 rounded-lg flex items-center justify-center mr-4"
           >
             <span class="text-2xl">📊</span>
           </div>
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-              Avg Cycle
-            </h3>
-            <p
-              class="text-2xl font-bold text-purple-600 dark:text-purple-400"
-              id="cycle-length-avg"
-            >
+            <h3 class="text-lg font-semibold text-white">Avg Cycle</h3>
+            <p class="text-2xl font-bold text-purple-400" id="cycle-length-avg">
               -
             </p>
-            <p class="text-sm text-gray-600 dark:text-gray-400">days average</p>
+            <p class="text-sm text-gray-400">days average</p>
           </div>
         </div>
       </div>
@@ -165,7 +151,7 @@ import Layout from "../layouts/Layout.astro";
       <button
         id="start-period-btn"
         type="button"
-        class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-8 py-3 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800 disabled:bg-gray-400 disabled:text-gray-600 disabled:cursor-not-allowed disabled:hover:bg-gray-400 dark:disabled:bg-gray-600 dark:disabled:text-gray-400 dark:disabled:hover:bg-gray-600"
+        class="text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-800 font-medium rounded-lg text-sm px-8 py-3 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed disabled:hover:bg-gray-600"
         data-modal-target="period-modal"
         data-modal-toggle="period-modal"
       >
@@ -174,7 +160,7 @@ import Layout from "../layouts/Layout.astro";
       <button
         id="end-period-btn"
         type="button"
-        class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-8 py-3 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="text-white bg-gray-800 border border-gray-600 focus:outline-none hover:bg-gray-700 hover:border-gray-600 focus:ring-4 focus:ring-gray-700 font-medium rounded-lg text-sm px-8 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
         disabled
       >
         <span class="mr-2">✅</span>End Period
@@ -182,7 +168,7 @@ import Layout from "../layouts/Layout.astro";
       <button
         id="add-note-btn"
         type="button"
-        class="hidden md:block text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-6 py-3 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+        class="hidden md:block text-white bg-gray-800 border border-gray-600 focus:outline-none hover:bg-gray-700 hover:border-gray-600 focus:ring-4 focus:ring-gray-700 font-medium rounded-lg text-sm px-6 py-3"
         data-modal-target="note-modal"
         data-modal-toggle="note-modal"
       >
@@ -191,15 +177,13 @@ import Layout from "../layouts/Layout.astro";
     </div>
 
     <!-- Calendar Section -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 md:p-6">
+    <div class="bg-gray-800 rounded-lg shadow-lg p-4 md:p-6">
       <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-          Calendar
-        </h2>
+        <h2 class="text-2xl font-bold text-white">Calendar</h2>
         <button
           id="add-period-btn"
           type="button"
-          class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-4 py-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+          class="text-white bg-gray-800 border border-gray-600 focus:outline-none hover:bg-gray-700 hover:border-gray-600 focus:ring-4 focus:ring-gray-700 font-medium rounded-lg text-sm px-4 py-2"
           data-modal-target="period-modal"
           data-modal-toggle="period-modal"
         >
@@ -212,16 +196,12 @@ import Layout from "../layouts/Layout.astro";
     </div>
 
     <!-- Privacy Notice -->
-    <div
-      class="m-2 bg-green-50 border border-green-200 rounded-lg p-4 dark:bg-green-900/20 dark:border-green-800"
-    >
+    <div class="m-2 bg-green-900/20 border border-green-800 rounded-lg p-4">
       <div class="flex items-start">
-        <span class="text-green-600 dark:text-green-400 mr-2">🔒</span>
+        <span class="text-green-400 mr-2">🔒</span>
         <div>
-          <h4 class="font-medium text-green-800 dark:text-green-400 mb-1">
-            Your Privacy Matters
-          </h4>
-          <p class="text-sm text-green-700 dark:text-green-300">
+          <h4 class="font-medium text-green-400 mb-1">Your Privacy Matters</h4>
+          <p class="text-sm text-green-300">
             All your data is stored locally on your device. Nothing is shared or
             sent to external servers.
           </p>
@@ -238,21 +218,18 @@ import Layout from "../layouts/Layout.astro";
     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
   >
     <div class="relative p-4 w-full max-w-md max-h-full">
-      <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+      <div class="relative bg-gray-700 rounded-lg shadow">
         <div
-          class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600"
+          class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-600"
         >
-          <h3
-            id="period-modal-title"
-            class="text-lg font-semibold text-gray-900 dark:text-white"
-          >
+          <h3 id="period-modal-title" class="text-lg font-semibold text-white">
             <span id="period-modal-icon" class="mr-2">🩸</span><span
               id="period-modal-text">Start Period</span
             >
           </h3>
           <button
             type="button"
-            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+            class="text-gray-400 bg-transparent hover:bg-gray-600 hover:text-white rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
             data-modal-hide="period-modal"
           >
             <svg
@@ -275,31 +252,31 @@ import Layout from "../layouts/Layout.astro";
           <div>
             <label
               for="period-start-date"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              class="block mb-2 text-sm font-medium text-white"
               >Period Start Date</label
             >
             <input
               type="date"
               id="period-start-date"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              class="bg-gray-600 border border-gray-500 placeholder-gray-400 text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
             />
           </div>
           <div id="period-end-date-container" class="hidden">
             <label
               for="period-end-date"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              class="block mb-2 text-sm font-medium text-white"
               >Period End Date</label
             >
             <input
               type="date"
               id="period-end-date"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              class="bg-gray-600 border border-gray-500 placeholder-gray-400 text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
             />
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            <p class="text-xs text-gray-400 mt-1">
               Leave empty if period is still ongoing
             </p>
           </div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">
+          <div class="text-sm text-gray-400">
             <p id="period-modal-description">
               Select the date when your period started. You can choose today's
               date or a previous date.
@@ -307,24 +284,24 @@ import Layout from "../layouts/Layout.astro";
           </div>
         </div>
         <div
-          class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600"
+          class="flex items-center p-4 md:p-5 border-t border-gray-600 rounded-b"
         >
           <button
             id="period-primary-btn"
             type="button"
-            class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            class="text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             >Start Period</button
           >
           <button
             id="period-delete-btn"
             type="button"
-            class="hidden py-2.5 px-5 ms-3 text-sm font-medium text-white focus:outline-none bg-red-600 rounded-lg border border-red-600 hover:bg-red-700 focus:z-10 focus:ring-4 focus:ring-red-200 dark:bg-red-600 dark:border-red-600 dark:hover:bg-red-700 dark:focus:ring-red-700"
+            class="hidden py-2.5 px-5 ms-3 text-sm font-medium text-white focus:outline-none bg-red-600 rounded-lg border border-red-600 hover:bg-red-700 focus:z-10 focus:ring-4 focus:ring-red-700"
             >Delete</button
           >
           <button
             id="period-cancel-btn"
             type="button"
-            class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+            class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-400 focus:outline-none bg-gray-800 rounded-lg border border-gray-600 hover:text-white hover:bg-gray-700 focus:z-10 focus:ring-4 focus:ring-gray-700"
             data-modal-hide="period-modal">Cancel</button
           >
         </div>
@@ -340,16 +317,14 @@ import Layout from "../layouts/Layout.astro";
     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
   >
     <div class="relative p-4 w-full max-w-2xl max-h-full">
-      <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+      <div class="relative bg-gray-700 rounded-lg shadow">
         <div
-          class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600"
+          class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-600"
         >
-          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-            Add Daily Note
-          </h3>
+          <h3 class="text-xl font-semibold text-white">Add Daily Note</h3>
           <button
             type="button"
-            class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+            class="text-gray-400 bg-transparent hover:bg-gray-600 hover:text-white rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
             data-modal-hide="note-modal"
           >
             <svg
@@ -372,40 +347,38 @@ import Layout from "../layouts/Layout.astro";
           <div>
             <label
               for="note-date"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >Date</label
+              class="block mb-2 text-sm font-medium text-white">Date</label
             >
             <input
               type="date"
               id="note-date"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              class="bg-gray-600 border border-gray-500 placeholder-gray-400 text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
             />
           </div>
           <div>
             <label
               for="note-symptoms"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >Symptoms</label
+              class="block mb-2 text-sm font-medium text-white">Symptoms</label
             >
             <div class="flex flex-wrap gap-2 mb-3">
               <span
-                class="symptom-tag bg-red-100 hover:bg-red-200 text-red-800 text-sm font-medium px-2.5 py-0.5 rounded cursor-pointer dark:bg-red-900 dark:text-red-300"
+                class="symptom-tag bg-red-900 text-red-300 text-sm font-medium px-2.5 py-0.5 rounded cursor-pointer"
                 data-symptom="cramps">Cramps</span
               >
               <span
-                class="symptom-tag bg-blue-100 hover:bg-blue-200 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded cursor-pointer dark:bg-blue-900 dark:text-blue-300"
+                class="symptom-tag bg-blue-900 text-blue-300 text-sm font-medium px-2.5 py-0.5 rounded cursor-pointer"
                 data-symptom="bloating">Bloating</span
               >
               <span
-                class="symptom-tag bg-yellow-100 hover:bg-yellow-200 text-yellow-800 text-sm font-medium px-2.5 py-0.5 rounded cursor-pointer dark:bg-yellow-900 dark:text-yellow-300"
+                class="symptom-tag bg-yellow-900 text-yellow-300 text-sm font-medium px-2.5 py-0.5 rounded cursor-pointer"
                 data-symptom="headache">Headache</span
               >
               <span
-                class="symptom-tag bg-green-100 hover:bg-green-200 text-green-800 text-sm font-medium px-2.5 py-0.5 rounded cursor-pointer dark:bg-green-900 dark:text-green-300"
+                class="symptom-tag bg-green-900 text-green-300 text-sm font-medium px-2.5 py-0.5 rounded cursor-pointer"
                 data-symptom="mood">Mood Changes</span
               >
               <span
-                class="symptom-tag bg-purple-100 hover:bg-purple-200 text-purple-800 text-sm font-medium px-2.5 py-0.5 rounded cursor-pointer dark:bg-purple-900 dark:text-purple-300"
+                class="symptom-tag bg-purple-900 text-purple-300 text-sm font-medium px-2.5 py-0.5 rounded cursor-pointer"
                 data-symptom="fatigue">Fatigue</span
               >
             </div>
@@ -413,37 +386,201 @@ import Layout from "../layouts/Layout.astro";
           <div>
             <label
               for="note-text"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >Notes</label
+              class="block mb-2 text-sm font-medium text-white">Notes</label
             >
             <textarea
               id="note-text"
               rows="4"
-              class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+              class="block p-2.5 w-full text-sm text-white bg-gray-600 rounded-lg border border-gray-500 focus:ring-primary-500 focus:border-primary-500 placeholder-gray-400"
               placeholder="Add any additional notes..."></textarea>
           </div>
         </div>
         <div
-          class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600"
+          class="flex items-center p-4 md:p-5 border-t border-gray-600 rounded-b"
         >
           <button
             id="save-note-btn"
             type="button"
-            class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+            class="text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
             >Save Note</button
           >
           <button
             id="delete-note-btn"
             type="button"
-            class="py-2.5 px-5 ms-3 text-sm font-medium text-white focus:outline-none bg-red-600 rounded-lg border border-red-600 hover:bg-red-700 focus:z-10 focus:ring-4 focus:ring-red-200 dark:bg-red-600 dark:border-red-600 dark:hover:bg-red-700 dark:focus:ring-red-700"
+            class="py-2.5 px-5 ms-3 text-sm font-medium text-white focus:outline-none bg-red-600 rounded-lg border border-red-600 hover:bg-red-700 focus:z-10 focus:ring-4 focus:ring-red-700"
             >Delete</button
           >
           <button
             id="cancel-note-btn"
             type="button"
-            class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+            class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-400 focus:outline-none bg-gray-800 rounded-lg border border-gray-600 hover:text-white hover:bg-gray-700 focus:z-10 focus:ring-4 focus:ring-gray-700"
             >Cancel</button
           >
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div
+    id="settings-modal"
+    tabindex="-1"
+    aria-hidden="true"
+    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center !items-start md:!items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+  >
+    <div class="relative bg-gray-700 rounded-lg shadow">
+      <div class="relative bg-gray-700 rounded-lg shadow">
+        <div
+          class="flex items-center justify-between p-4 md:p-5 border-b border-gray-600 rounded-t"
+        >
+          <h3 class="text-xl font-semibold text-white">Settings</h3>
+          <button
+            type="button"
+            data-modal-hide="settings-modal"
+            class="text-gray-400 bg-transparent hover:bg-gray-600 hover:text-white rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+          >
+            <svg
+              class="w-3 h-3"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 14"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="p-4 md:p-5 space-y-6">
+          <!-- Cycle Settings -->
+          <div>
+            <h4 class="text-lg font-medium text-white mb-4">Cycle Settings</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="cycle-length-setting"
+                  class="block mb-2 text-sm font-medium text-white"
+                  >Average Cycle Length (days)</label
+                >
+                <input
+                  type="number"
+                  id="cycle-length-setting"
+                  min="21"
+                  max="40"
+                  class="bg-gray-600 border border-gray-500 text-white placeholder-gray-400 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+                  placeholder="28"
+                />
+              </div>
+              <div>
+                <label
+                  for="period-length-setting"
+                  class="block mb-2 text-sm font-medium text-white"
+                  >Period Length (days)</label
+                >
+                <input
+                  type="number"
+                  id="period-length-setting"
+                  min="1"
+                  max="10"
+                  class="bg-gray-600 border border-gray-500 text-white placeholder-gray-400 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+                  placeholder="5"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Display Settings -->
+          <div>
+            <h4 class="text-lg font-medium text-white mb-4">
+              Calendar Display
+            </h4>
+            <div class="space-y-4">
+              <div class="flex items-center">
+                <input
+                  id="show-next-period-checkbox"
+                  type="checkbox"
+                  class="w-4 h-4 text-primary-600 bg-gray-600 border-gray-500 rounded focus:ring-primary-500 focus:ring-2 ring-offset-gray-800 focus:ring-offset-2"
+                  checked
+                />
+                <label
+                  for="show-next-period-checkbox"
+                  class="ms-2 text-sm font-medium text-gray-300"
+                  >Show predicted next period</label
+                >
+              </div>
+              <div class="flex items-center">
+                <input
+                  id="show-ovulation-checkbox"
+                  type="checkbox"
+                  class="w-4 h-4 text-primary-600 bg-gray-600 border-gray-500 rounded focus:ring-primary-500 focus:ring-2 ring-offset-gray-800 focus:ring-offset-2"
+                  checked
+                />
+                <label
+                  for="show-ovulation-checkbox"
+                  class="ms-2 text-sm font-medium text-gray-300"
+                  >Show ovulation prediction</label
+                >
+              </div>
+              <div class="flex items-center">
+                <input
+                  id="show-safe-days-checkbox"
+                  type="checkbox"
+                  class="w-4 h-4 text-primary-600 bg-gray-600 border-gray-500 rounded focus:ring-primary-500 focus:ring-2 ring-offset-gray-800 focus:ring-offset-2"
+                />
+                <label
+                  for="show-safe-days-checkbox"
+                  class="ms-2 text-sm font-medium text-gray-300"
+                  >Show safe days (fertility awareness)</label
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Data Management -->
+          <div>
+            <h4 class="text-lg font-medium text-white mb-4">Data Management</h4>
+            <div class="bg-red-900/20 border border-red-800 rounded-lg p-4">
+              <div class="flex items-start">
+                <span class="text-red-400 mr-2">⚠️</span>
+                <div class="flex-1">
+                  <h5 class="font-medium text-red-300 mb-2">Clear All Data</h5>
+                  <p class="text-sm text-red-400 mb-3">
+                    This will permanently delete all your period data, notes,
+                    and settings. This action cannot be undone.
+                  </p>
+                  <button
+                    id="clear-data-btn"
+                    type="button"
+                    class="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-800 font-medium rounded-lg text-sm px-4 py-2"
+                  >
+                    Clear All Data
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="flex items-center p-4 md:p-5 border-t border-gray-600 rounded-b"
+        >
+          <button
+            id="save-settings-btn"
+            type="button"
+            class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            >Save Settings</button
+          >
+          <button
+            id="cancel-settings-btn"
+            type="button"
+            data-modal-hide="settings-modal"
+            class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-400 focus:outline-none bg-gray-800 rounded-lg border border-gray-600 hover:text-white hover:bg-gray-700 focus:z-10 focus:ring-4 focus:ring-gray-100"
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </div>
