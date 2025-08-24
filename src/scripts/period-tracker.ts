@@ -1992,6 +1992,9 @@ class PeriodTrackerFlowbite {
       pillDateInput.value = pillDate;
     }
 
+    // Show/hide first-time user notice
+    this.updateFirstTimeNotice();
+
     // Set the current state
     this.populatePillModal(pill);
 
@@ -1999,6 +2002,22 @@ class PeriodTrackerFlowbite {
     const modal = this.getOrCreateModal("pill-modal");
     if (modal) {
       modal.show();
+    }
+  }
+
+  private updateFirstTimeNotice(): void {
+    const firstTimeNotice = document.getElementById("first-time-pill-notice");
+    if (!firstTimeNotice) return;
+
+    // Show notice only if this is the first time using pill tracking
+    // (no pills recorded yet)
+    const isFirstTime =
+      !this.data.pillsTaken || this.data.pillsTaken.length === 0;
+
+    if (isFirstTime) {
+      firstTimeNotice.classList.remove("hidden");
+    } else {
+      firstTimeNotice.classList.add("hidden");
     }
   }
 
