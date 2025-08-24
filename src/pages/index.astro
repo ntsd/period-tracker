@@ -78,11 +78,9 @@ import Layout from "../layouts/Layout.astro";
 
   <main class="container mx-auto px-0 md:px-4 py-0 md:py-8 max-w-7xl">
     <!-- Status Cards -->
-    <div
-      class="grid grid-cols-1 md:grid-cols-3 md:gap-6 mb-4 md:mb-8 divide-y-2 divide-gray-600 md:divide-y-0"
-    >
+    <div class="flex flex-col md:flex-row justify-center gap-4 md:gap-6 mb-4 md:mb-8">
       <!-- Current Status Card -->
-      <div class="bg-gray-800 md:rounded-lg shadow-lg p-4 md:p-6">
+      <div class="bg-gray-800 md:rounded-lg shadow-lg p-4 md:p-6 flex-1 md:max-w-xs">
         <div class="flex items-center">
           <div
             id="status-indicator"
@@ -103,7 +101,7 @@ import Layout from "../layouts/Layout.astro";
       </div>
 
       <!-- Period Days Card -->
-      <div class="bg-gray-800 md:rounded-lg shadow-lg p-4 md:p-6">
+      <div class="bg-gray-800 md:rounded-lg shadow-lg p-4 md:p-6 flex-1 md:max-w-xs">
         <div class="flex items-center">
           <div
             class="w-12 h-12 bg-primary-900 rounded-lg flex items-center justify-center mr-4"
@@ -127,8 +125,29 @@ import Layout from "../layouts/Layout.astro";
         </div>
       </div>
 
+      <!-- Pill Streak Card -->
+      <div
+        id="pill-streak-card"
+        class="bg-gray-800 md:rounded-lg shadow-lg p-4 md:p-6 flex-1 md:max-w-xs"
+      >
+        <div class="flex items-center">
+          <div
+            class="w-12 h-12 bg-green-900 rounded-lg flex items-center justify-center mr-4"
+          >
+            <span class="text-2xl">💊</span>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-white">Pill Streak</h3>
+            <p class="text-2xl font-bold text-green-400" id="pill-streak-count">
+              -
+            </p>
+            <p class="text-sm text-gray-400">days in a row</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Cycle Length Card -->
-      <div class="bg-gray-800 md:rounded-lg shadow-lg p-4 md:p-6">
+      <div class="bg-gray-800 md:rounded-lg shadow-lg p-4 md:p-6 flex-1 md:max-w-xs">
         <div class="flex items-center">
           <div
             class="w-12 h-12 bg-purple-900 rounded-lg flex items-center justify-center mr-4"
@@ -147,7 +166,7 @@ import Layout from "../layouts/Layout.astro";
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex gap-4 mb-8 justify-center">
+    <div class="flex flex-wrap gap-4 mb-8 justify-center">
       <button
         id="start-period-btn"
         type="button"
@@ -164,6 +183,15 @@ import Layout from "../layouts/Layout.astro";
         disabled
       >
         <span class="mr-2">✅</span>End Period
+      </button>
+      <button
+        id="take-pill-btn"
+        type="button"
+        class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-800 font-medium rounded-lg text-sm px-6 py-3"
+        data-modal-target="pill-modal"
+        data-modal-toggle="pill-modal"
+      >
+        <span class="mr-2">💊</span>Take Pill
       </button>
       <button
         id="add-note-btn"
@@ -421,12 +449,156 @@ import Layout from "../layouts/Layout.astro";
     </div>
   </div>
 
+  <!-- Pill Tracking Modal -->
+  <div
+    id="pill-modal"
+    tabindex="-1"
+    aria-hidden="true"
+    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+  >
+    <div class="relative p-4 w-full max-w-md max-h-full">
+      <div class="relative bg-gray-700 rounded-lg shadow">
+        <div
+          class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-600"
+        >
+          <h3 class="text-lg font-semibold text-white">
+            <span class="mr-2">💊</span>Birth Control Pill
+          </h3>
+          <button
+            type="button"
+            class="text-gray-400 bg-transparent hover:bg-gray-600 hover:text-white rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center"
+            data-modal-hide="pill-modal"
+          >
+            <svg
+              class="w-3 h-3"
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 14 14"
+            >
+              <path
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="p-4 md:p-5 space-y-4">
+          <div>
+            <label
+              for="pill-date"
+              class="block mb-2 text-sm font-medium text-white">Date</label
+            >
+            <input
+              type="date"
+              id="pill-date"
+              class="bg-gray-600 border border-gray-500 placeholder-gray-400 text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+            />
+          </div>
+
+          <div>
+            <label class="block mb-2 text-sm font-medium text-white"
+              >Did you take your pill?</label
+            >
+            <div class="flex gap-4">
+              <div class="flex items-center">
+                <input
+                  id="pill-taken-yes"
+                  type="radio"
+                  name="pill-taken"
+                  value="yes"
+                  checked
+                  class="w-4 h-4 text-green-600 bg-gray-600 border-gray-500 focus:ring-green-500 focus:ring-2"
+                />
+                <label
+                  for="pill-taken-yes"
+                  class="ms-2 text-sm font-medium text-gray-300"
+                >
+                  Yes ✅
+                </label>
+              </div>
+              <div class="flex items-center">
+                <input
+                  id="pill-taken-no"
+                  type="radio"
+                  name="pill-taken"
+                  value="no"
+                  class="w-4 h-4 text-red-600 bg-gray-600 border-gray-500 focus:ring-red-500 focus:ring-2"
+                />
+                <label
+                  for="pill-taken-no"
+                  class="ms-2 text-sm font-medium text-gray-300"
+                >
+                  No ❌
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div id="pill-time-container">
+            <label
+              for="pill-time"
+              class="block mb-2 text-sm font-medium text-white"
+              >Time taken</label
+            >
+            <input
+              type="time"
+              id="pill-time"
+              class="bg-gray-600 border border-gray-500 placeholder-gray-400 text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+            />
+            <p class="text-xs text-gray-400 mt-1">
+              When did you take your pill?
+            </p>
+          </div>
+
+          <div id="pill-missed-reason-container" style="display: none;">
+            <label
+              for="pill-missed-reason"
+              class="block mb-2 text-sm font-medium text-white"
+              >Reason (optional)</label
+            >
+            <textarea
+              id="pill-missed-reason"
+              rows="3"
+              class="block p-2.5 w-full text-sm text-white bg-gray-600 rounded-lg border border-gray-500 focus:ring-primary-500 focus:border-primary-500 placeholder-gray-400"
+              placeholder="Why did you miss your pill? (e.g., forgot, sick, traveling)"
+            ></textarea>
+          </div>
+        </div>
+        <div
+          class="flex items-center p-4 md:p-5 border-t border-gray-600 rounded-b"
+        >
+          <button
+            id="save-pill-btn"
+            type="button"
+            class="text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+            >Save</button
+          >
+          <button
+            id="delete-pill-btn"
+            type="button"
+            class="hidden py-2.5 px-5 ms-3 text-sm font-medium text-white focus:outline-none bg-red-600 rounded-lg border border-red-600 hover:bg-red-700 focus:z-10 focus:ring-4 focus:ring-red-700"
+            >Delete</button
+          >
+          <button
+            id="cancel-pill-btn"
+            type="button"
+            class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-400 focus:outline-none bg-gray-800 rounded-lg border border-gray-600 hover:text-white hover:bg-gray-700 focus:z-10 focus:ring-4 focus:ring-gray-700"
+            data-modal-hide="pill-modal">Cancel</button
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Settings Modal -->
   <div
     id="settings-modal"
     tabindex="-1"
     aria-hidden="true"
-    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center !items-start md:!items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+    class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center !items-start w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
   >
     <div class="relative bg-gray-700 rounded-lg shadow">
       <div class="relative bg-gray-700 rounded-lg shadow">
@@ -458,7 +630,7 @@ import Layout from "../layouts/Layout.astro";
         <div class="p-4 md:p-5 space-y-6">
           <!-- Cycle Settings -->
           <div>
-            <h4 class="text-lg font-medium text-white mb-4">Cycle Settings</h4>
+            <h4 class="font-medium text-white mb-4">Cycle Settings</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label
@@ -495,9 +667,7 @@ import Layout from "../layouts/Layout.astro";
 
           <!-- Display Settings -->
           <div>
-            <h4 class="text-lg font-medium text-white mb-4">
-              Calendar Display
-            </h4>
+            <h4 class="font-medium text-white mb-4">Calendar Display</h4>
             <div class="space-y-4">
               <div class="flex items-center">
                 <input
@@ -540,9 +710,73 @@ import Layout from "../layouts/Layout.astro";
             </div>
           </div>
 
+          <!-- Birth Control Pill Settings -->
+          <div id="pill-settings-section">
+            <h4 class="font-medium text-white mb-4">Birth Control Pills</h4>
+            <div class="space-y-4">
+              <div class="flex items-center">
+                <input
+                  id="pill-tracking-checkbox"
+                  type="checkbox"
+                  class="w-4 h-4 text-primary-600 bg-gray-600 border-gray-500 rounded focus:ring-primary-500 focus:ring-2 ring-offset-gray-800 focus:ring-offset-2"
+                />
+                <label
+                  for="pill-tracking-checkbox"
+                  class="ms-2 text-sm font-medium text-gray-300"
+                  >Enable birth control pill tracking</label
+                >
+              </div>
+              <div class="flex items-center">
+                <input
+                  id="pill-reminder-checkbox"
+                  type="checkbox"
+                  class="w-4 h-4 text-primary-600 bg-gray-600 border-gray-500 rounded focus:ring-primary-500 focus:ring-2 ring-offset-gray-800 focus:ring-offset-2"
+                />
+                <label
+                  for="pill-reminder-checkbox"
+                  class="ms-2 text-sm font-medium text-gray-300"
+                  >Enable daily pill reminder</label
+                >
+              </div>
+              <div>
+                <label
+                  for="pill-reminder-time"
+                  class="block mb-2 text-sm font-medium text-white"
+                  >Reminder time</label
+                >
+                <input
+                  type="time"
+                  id="pill-reminder-time"
+                  class="bg-gray-600 border border-gray-500 text-white placeholder-gray-400 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+                  value="21:00"
+                />
+                <p class="text-xs text-gray-400 mt-1">
+                  Set your preferred time for pill reminders
+                </p>
+              </div>
+              <div>
+                <label
+                  for="pill-pack-days"
+                  class="block mb-2 text-sm font-medium text-white"
+                  >Days per pill pack</label
+                >
+                <input
+                  type="number"
+                  id="pill-pack-days"
+                  min="14"
+                  max="28"
+                  class="bg-gray-600 border border-gray-500 text-white placeholder-gray-400 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5"
+                  value="21"
+                />
+                <p class="text-xs text-gray-400 mt-1">
+                  Number of active pill days in your pack (typically 21 or 24)
+                </p>
+              </div>
+            </div>
+          </div>
+
           <!-- Data Management -->
           <div>
-            <h4 class="text-lg font-medium text-white mb-4">Data Management</h4>
             <div class="bg-red-900/20 border border-red-800 rounded-lg p-4">
               <div class="flex items-start">
                 <span class="text-red-400 mr-2">⚠️</span>
